@@ -11,13 +11,13 @@ gridplotHic <- function(hicdata, chrom, chromstart, chromend, palette, zrange, r
     
     #normalized to 0 to 1 based on chromstart and chromend
     xleft = x-.5*res
-    xleft.normalized = (xleft-chrstart)/(chrend-chrstart)
+    xleft.normalized = normalize(xleft, chrstart, chrend)
     xright = x+.5*res
-    xright.normalized = (xright-chrstart)/(chrend-chrstart)
+    xright.normalized = normalize(xright, chrstart, chrend)
     ytop = y+.5*res
-    ytop.normalized = (ytop - chrstart)/(chrend-chrstart)
+    ytop.normalized = normalize(ytop, chrstart, chrend)
     ybottom = y-.5*res
-    ybottom.normalized = (ybottom-chrstart)/(chrend-chrstart)
+    ybottom.normalized = normalize(ybottom, chrstart, chrend)
     #plot all the squares
     grid.polygon(x=c(xleft.normalized,xleft.normalized,xright.normalized,xright.normalized),y=c(ybottom.normalized,ytop.normalized,ytop.normalized,ybottom.normalized),gp=gpar(col=col,fill=col))
     
@@ -60,7 +60,6 @@ gridplotHic <- function(hicdata, chrom, chromstart, chromend, palette, zrange, r
  
   apply(hicregion,1,drawpoly,res=resolution,chrstart = chromstart, chrend=chromend)
   
-  print("testing")
   #return(list(c(min_z,max_z),palette))
 }
 
