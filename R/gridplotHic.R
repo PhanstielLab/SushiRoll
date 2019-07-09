@@ -61,7 +61,7 @@ gridplotHic <- function(hicdata, chrom, chromstart, chromend, palette, zrange, r
   apply(hicregion,1,drawpoly,res=resolution,chrstart = chromstart, chrend=chromend)
   
   
-  #return(list(c(min_z,max_z),palette))
+  return(list(c(min_z,max_z),palette))
 }
 
 # gridplotHic(hicdata = hic.filt.full,
