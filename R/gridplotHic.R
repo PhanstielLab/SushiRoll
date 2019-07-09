@@ -4,7 +4,6 @@ gridplotHic <- function(hicdata, chrom, chromstart, chromend, palette, zrange, r
 
   #assuming input data is of format x, y, counts where x and y are in basepairs
 
-  grid.newpage()
   drawpoly <- function(df, res, chrstart, chrend){
     col = rgb(df[4],df[5],df[6],maxColorValue=255)
     x = df[1]
