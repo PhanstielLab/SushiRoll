@@ -13,8 +13,8 @@
 #' @param altchrom if looking at region between two different chromosomes, this is the specified alternative chromsome
 #' @param altchromstart if looking at region between two different chromosomes, start position of altchrom
 #' @param altchromend if looking at region between two different chromsomes, end position of altchrom
-
-
+#'
+#'
 #' @export
 
 extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, resolution, zrange = NULL, norm = "NONE", resscale = "BP", altchrom = NULL, altchromstart = NULL, altchromend = NULL){
