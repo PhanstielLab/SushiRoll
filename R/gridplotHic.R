@@ -13,16 +13,16 @@
 #' @param raster allows for rasterization of plot, which results in quicker plotting
 #' @param addlegend add legend representing scores for color range
 #' @param legendlocation if addlegend == TRUE, where relative to plot to place legend; options are "right" and "top"
-#' @param height height of plot
-#' @param width width of plot
-#' @param x x-coordinate of where to place plot
-#' @param y y-coordinate of where to place plot
+#' @param height height of plot in inches
+#' @param width width of plot in inches
+#' @param x x-coordinate of where to place plot relative to top left of plot
+#' @param y y-coordinate of where to place plot relative to top left of plot
 #'
 #'
 #' @export
 
 gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zrange = NULL, resolution, norm = "NONE", plottype = "square", half = NULL, raster = TRUE, addlegend = FALSE,
-                        legendlocation = NULL, height = 3.25, width=3.25, x= 0.75, y= 0.75,...){
+                        legendlocation = NULL, height = 3.25, width = 3.25, x = 0.75, y = 0.75, ...){
 
 
   ###########################################################################################################################################################################################################
@@ -37,11 +37,11 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
     ## Get coordinates for the points of the square, normalized to 0 to 1 based on chromstart and chromend
     xleft = x - .5 * resolution
     xleft.normalized = normalize(xleft, chromstart, chromend)
-    xright = x+.5*resolution
+    xright = x + .5 * resolution
     xright.normalized = normalize(xright, chromstart, chromend)
-    ytop = y+.5*resolution
+    ytop = y + .5 * resolution
     ytop.normalized = normalize(ytop, chromstart, chromend)
-    ybottom = y-.5*resolution
+    ybottom = y - .5 * resolution
     ybottom.normalized = normalize(ybottom, chromstart, chromend)
 
     ## Plot all the squares
@@ -57,10 +57,9 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
     if(ncol(hic) > 3){
       stop("Incorrect dataframe format.  Input a dataframe with 3 columns: x, y, counts.")
     } else {
-      hicregion <- hic[which(hic[,1] >= chromstart & hic[,1] <= chromend &
-                               hic[,2] >= chromstart & hic[,2] <= chromend),]
+      hicregion <- hic[which(hic[ ,1] >= chromstart & hic[ ,1] <= chromend &
+                               hic[ ,2] >= chromstart & hic[ ,2] <= chromend), ]
       colnames(hicregion) <- c("x", "y", "counts")
-
     }
 
     ## Scale lower and upper bounds using zrange
@@ -90,7 +89,6 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
     stop("Incorrect input. Input a .hic file or a dataframe.")
   }
 
-
   ### VIEWPORTS ###
 
   if(is.null(current.vpPath()) == FALSE){
@@ -98,15 +96,15 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
   }
   ## Make viewport
   converted_coords = convert_coordinates(height, width, x, y)
-  vp <- viewport(height=unit(height,"in"),width=unit(width,"in"),x=unit(converted_coords[1],"in"),y=unit(converted_coords[2],"in"))
+  vp <- viewport(height = unit(height, "in"), width = unit(width, "in"), x = unit(converted_coords[1], "in"), y = unit(converted_coords[2], "in"))
   pushViewport(vp)
 
 
   ## CONVERT NUMBERS TO COLORS ##
   ## Use colour_values function from "colourvalues" package to convert numbers to colors
-  color_vector <- colour_values(hicregion[,3], palette = palette)
+  color_vector <- colour_values(hicregion[ ,3], palette = palette)
   # Sorted color vector for use in legend
-  sorted_color_vector <- colour_values(sort(hicregion[,3]), palette = palette)
+  sorted_color_vector <- colour_values(sort(hicregion[ ,3]), palette = palette)
   sorted_colors <- unique(sorted_color_vector)
 
 
@@ -114,17 +112,17 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
   if(raster == TRUE){
 
     ## Add color vector to hicregion dataframe
-    hicregion <- cbind(hicregion,color_vector)
+    hicregion <- cbind(hicregion, color_vector)
 
-    ## Get the lowest color in the range to fill in matrix
-    lowest_colors <- subset(hicregion, counts == min(counts))
-    lowest_color <- as.character(lowest_colors[1,"color_vector"])
+    ## Get the lowest color in the range to fill in matrix for triangle plots
+    lowest_colors <- subset(hicregion, counts = min(counts))
+    lowest_color <- as.character(lowest_colors[1, "color_vector"])
 
     ## Remove unnecessary "counts" column
-    hicregion= hicregion[,c(1,2,4)]
+    hicregion = hicregion[ ,c(1, 2, 4)]
 
     ## Cast dataframe into a matrix
-    reshapen <- as.matrix(reshape::cast(hicregion,formula=x~y,value="color_vector"))
+    reshapen <- as.matrix(reshape::cast(hicregion, formula = x ~ y, value = "color_vector"))
 
     if(plottype == "triangle"){
 
@@ -136,37 +134,33 @@ gridplotHic <- function(hic, chrom, chromstart, chromend, palette = 'reds', zran
 
       ## Reverse orientation of matrix based on columns for bottom triangle and rows for top triangle
       if (half == "bottom"){
-        reshapen <- apply(reshapen,2,rev)
+        reshapen <- apply(reshapen, 2, rev)
       } else if (half == "top"){
-        reshapen <- apply(reshapen,1,rev)
+        reshapen <- apply(reshapen, 1, rev)
       } else {
         stop("argument \"half\" is required for argument \"plottype = triangle\". ")
       }
     }
 
-
     ## Matrix already complete from extraction, reverse orientation based on columns
     if(plottype == "square"){
-      reshapen <- apply(reshapen,2,rev)
+      reshapen <- apply(reshapen, 2, rev)
     }
-
     grid.raster(reshapen)
-
   }
-
 
   ### NON-RASTERIZED PLOT ###
   if (raster == "FALSE") {
 
     ## Append colors to hicdata and convert to rgb
-    hicregion <- cbind(hicregion,t(col2rgb(color_vector)))
+    hicregion <- cbind(hicregion, t(col2rgb(color_vector)))
 
     if(plottype == "triangle"){
 
       ## Need to get lower part of dataframe to plot bottom triangle
       if(half == "bottom"){
 
-        lower <- hicregion[, c(2,1,3,4,5,6)]
+        lower <- hicregion[ , c(2, 1, 3, 4, 5, 6)]
         colnames(lower) <- c("x", "y", "counts", "red", "green", "blue")
         hicregion <- lower
       }
