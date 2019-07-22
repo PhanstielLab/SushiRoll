@@ -16,7 +16,6 @@
 
 
 #' @export
-#sourceCpp('~/Desktop/straw-master/R/straw-R.cpp')
 
 extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, resolution, zrange = NULL, norm = "NONE", resscale = "BP", altchrom = NULL, altchromstart = NULL, altchromend = NULL){
 
