@@ -1,6 +1,6 @@
 #' extracts HiC data from .hic file using Straw
-#' 
-#' 
+#'
+#'
 #' @param hic path to .hic file
 #' @param format format of data wanted, which will depend on what kind of plot is ultimately desired; options are "sparse" and "full"
 #' @param chrom if not alternative chromosome, chromosome of desired region
@@ -29,8 +29,8 @@ extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, r
     regionChrom <- gsub(pattern = "chr", replacement = "", x = chrom)
     regionStraw <- paste(regionChrom, chromstart, chromend, sep = ":")
   }
-  
-  # Extract upper triangular using straw, depending on one chromsome interaction or multiple chromosome interactions 
+
+  # Extract upper triangular using straw, depending on one chromsome interaction or multiple chromosome interactions
   if(is.null(altchrom)){
     upper <- straw_R(sprintf("%s %s %s %s %s %i", norm, hic, regionStraw, regionStraw, resscale, resolution))
   } else {
@@ -42,10 +42,10 @@ extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, r
       regionChrom2 <- gsub(pattern = "chr", replacement = "", x = altchrom)
       regionStraw2 <- paste(regionChrom2, altchromstart, altchromend, sep = ":" )
     }
-    
+
     upper <- straw_R(sprintf("%s %s %s %s %s %i", norm, hic, regionStraw, regionStraw2, resscale, resolution))
   }
-  
+
   # Full format: get symmetric data, complete missing values, replace NA's with 0's
   if(format == "full"){
     lower <- upper[ ,c(2,1,3)]
@@ -53,7 +53,7 @@ extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, r
     combined <- unique(rbind(upper, lower))
     combinedComplete <- tidyr::complete(combined, x, y)
     combinedComplete$counts[is.na(combinedComplete$counts)] <- 0
-    
+
     # Scale lower and upper bounds using zrange
     if(is.null(zrange)){
       zrange <- c(0, max(combinedComplete$counts))
@@ -65,8 +65,8 @@ extractHiC <- function(hic, format, chrom, chromstart = NULL, chromend = NULL, r
       combinedComplete$counts[combinedComplete$counts >= zrange[2]] <- zrange[2]
     }
     return(as.data.frame(combinedComplete))
-  } 
-  
+  }
+
   # Sparse format: upper sparse triangular format, scale with new zrange if given
   if (format == "sparse"){
     ## Scale lower and upper bounds using zrange

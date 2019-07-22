@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 straw_R <- function(argv) {
-    .Call('_SushiRoll_straw_R', PACKAGE = 'SushiRoll', argv)
+    .Call(`_SushiRoll_straw_R`, argv)
 }
 
